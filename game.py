@@ -20,14 +20,15 @@ class Board(object):
         # need how many pieces in a row to win
         self.n_in_row = int(kwargs.get('n_in_row', 5))
         self.players = [1, 2]  # player1 and player2
-
+        self.played_move = []
     def init_board(self, start_player=0):
         if self.width < self.n_in_row or self.height < self.n_in_row:
             raise Exception('board width and height can not be '
                             'less than {}'.format(self.n_in_row))
         self.current_player = self.players[start_player]  # start player
         # keep available moves in a list
-        self.availables = list(range(self.width * self.height))
+        #self.availables = list(range(self.width * self.height))
+        self.availables = list(range(self.width))
         self.states = {}
         self.last_move = -1
 
@@ -76,7 +77,16 @@ class Board(object):
 
     def do_move(self, move):
         self.states[move] = self.current_player
+       # print(self.states)
+        #print("states " + str(self.states[move]))
+        if (move+8) <=63 : 
+            self.availables.append(move+8)
+        #print("move " + str(move))
+        
+        self.played_move.append(move)
         self.availables.remove(move)
+       # print("ava " + str(self.availables))
+        ##self.availables.append(max(self.availables)+1)
         self.current_player = (
             self.players[0] if self.current_player == self.players[1]
             else self.players[1]
@@ -89,13 +99,16 @@ class Board(object):
         states = self.states
         n = self.n_in_row
 
-        moved = list(set(range(width * height)) - set(self.availables))
+       # moved = list(set(range(width * height)) - set(self.availables))
+        moved = self.played_move
+        #print("moved " + str(moved))
         if len(moved) < self.n_in_row *2-1:
             return False, -1
 
         for m in moved:
             h = m // width
             w = m % width
+            #print(m)
             player = states[m]
 
             if (w in range(width - n + 1) and
@@ -113,7 +126,7 @@ class Board(object):
             if (w in range(n - 1, width) and h in range(height - n + 1) and
                     len(set(states.get(i, -1) for i in range(m, m + n * (width - 1), width - 1))) == 1):
                 return True, player
-
+        #print(states)
         return False, -1
 
     def game_end(self):

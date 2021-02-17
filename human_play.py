@@ -76,7 +76,10 @@ def run():
 
         # human player, input your move in the format: 2,3
         human = Human()
-
+        human1 = Human()
+        mcts_player1 = MCTSPlayer(best_policy.policy_value_fn,
+                                 c_puct=5,
+                                 n_playout=400)
         # set start_player=0 for human first
         game.start_play(human, mcts_player, start_player=1, is_shown=1)
     except KeyboardInterrupt:
